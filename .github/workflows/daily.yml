@@ -1,0 +1,51 @@
+name: Daily Marquee Update
+
+on:
+  schedule:
+    # 13:00 UTC = 6:00 AM Pacific (PDT). Theaters post schedules overnight.
+    - cron: "0 13 * * *"
+  workflow_dispatch: # allows "Run workflow" button in GitHub UI
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Scrape today's listings
+        run: npm run scrape
+        # If scraping partially fails, individual venues fall back to "pending"
+        # and the build still proceeds — one broken site never blanks the board.
+
+      - name: Build marquee HTML
+        run: npm run build
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

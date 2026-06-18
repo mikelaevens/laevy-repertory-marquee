@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Read(//usr/local/bin/**)",
+      "Bash(brew list *)",
+      "Bash(command -v bun)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "Bash(brew --version)",
+      "Bash(gh --version)",
+      "Bash(curl -fsSL https://nodejs.org/dist/v20.19.2/node-v20.19.2-darwin-arm64.tar.gz -o /tmp/node.tar.gz)",
+      "Bash(tar -xzf /tmp/node.tar.gz -C /tmp)",
+      "Bash(sudo mv /tmp/node-v20.19.2-darwin-arm64 /usr/local/node20)",
+      "Bash(sudo ln -sf /usr/local/node20/bin/node /usr/local/bin/node)",
+      "Bash(sudo ln -sf /usr/local/node20/bin/npm /usr/local/bin/npm)",
+      "Bash(sudo ln -sf /usr/local/node20/bin/npx /usr/local/bin/npx)",
+      "Bash(tar -xzf /tmp/node.tar.gz -C '/Users/mikelaevens1 1')",
+      "Bash('/Users/mikelaevens1 1/node-v20.19.2-darwin-arm64/bin/node' --version)",
+      "Bash('/Users/mikelaevens1 1/node-v20.19.2-darwin-arm64/bin/npm' --version)",
+      "Bash(rm -rf '/Users/mikelaevens1 1/node-v20.19.2-darwin-arm64')",
+      "Bash(curl -fsSL https://nodejs.org/dist/v20.19.2/node-v20.19.2-darwin-x64.tar.gz -o /tmp/node-x64.tar.gz)",
+      "Bash(tar -xzf /tmp/node-x64.tar.gz -C /tmp)",
+      "Bash(mv /tmp/node-v20.19.2-darwin-x64 /tmp/node20x64)",
+      "Bash(/tmp/node20x64/bin/node --version)",
+      "Bash(/tmp/node20x64/bin/npm --version)",
+      "Bash(curl -fsSL https://github.com/cli/cli/releases/download/v2.72.0/gh_2.72.0_macOS_amd64.tar.gz -o /tmp/gh.tar.gz)",
+      "Bash(tar -xzf /tmp/gh.tar.gz -C /tmp)",
+      "Bash(/tmp/gh_2.72.0_macOS_amd64/bin/gh --version)",
+      "Bash(curl -fsSL https://github.com/cli/cli/releases/download/v2.72.0/gh_2.72.0_macOS_amd64.zip -o /tmp/gh.zip)",
+      "Bash(unzip -q /tmp/gh.zip -d /tmp/ghcli)",
+      "Read(//tmp/**)",
+      "Bash(/tmp/ghcli/gh_2.72.0_macOS_amd64/bin/gh --version)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
