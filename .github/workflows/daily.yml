@@ -25,6 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set today's date (Pacific time)
+        run: echo "TODAY=$(TZ=America/Los_Angeles date +%Y-%m-%d)" >> $GITHUB_ENV
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -33,12 +36,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Restore today's scraped data from cache so that re-runs later in the day
+      # (manual triggers or retries) fall back to morning's listings instead of
+      # showing "Program To Be Posted" for venues that dropped past showtimes.
+      - name: Restore today's data cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/today.json
+          key: today-json-${{ env.TODAY }}
+
       - name: Scrape today's listings
         run: npm run scrape
         env:
           TZ: America/Los_Angeles
-        # If scraping partially fails, individual venues fall back to "pending"
-        # and the build still proceeds — one broken site never blanks the board.
+
+      - name: Save today's data cache
+        uses: actions/cache/save@v4
+        with:
+          path: data/today.json
+          key: today-json-${{ env.TODAY }}
 
       - name: Build marquee HTML
         run: npm run build
