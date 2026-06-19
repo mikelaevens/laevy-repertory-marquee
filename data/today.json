@@ -17,23 +17,8 @@
     },
     "vista": {
       "key": "vista",
-      "status": "open",
-      "showings": [
-        {
-          "title": "Disclosure Day",
-          "times": [
-            "7:30"
-          ],
-          "tag": "70mm"
-        },
-        {
-          "title": "Happiness",
-          "times": [
-            "8:00"
-          ],
-          "tag": ""
-        }
-      ]
+      "status": "pending",
+      "showings": []
     },
     "cinematheque": {
       "key": "cinematheque",
@@ -155,16 +140,8 @@
     },
     "metrograph": {
       "key": "metrograph",
-      "status": "open",
-      "showings": [
-        {
-          "title": "Love Letter",
-          "times": [
-            "9:45"
-          ],
-          "tag": ""
-        }
-      ]
+      "status": "pending",
+      "showings": []
     }
   }
 }

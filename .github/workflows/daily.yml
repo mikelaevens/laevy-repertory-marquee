@@ -35,6 +35,8 @@ jobs:
 
       - name: Scrape today's listings
         run: npm run scrape
+        env:
+          TZ: America/Los_Angeles
         # If scraping partially fails, individual venues fall back to "pending"
         # and the build still proceeds — one broken site never blanks the board.
 

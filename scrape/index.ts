@@ -26,13 +26,6 @@ async function safeScrape(
   try {
     const result = await fn(date);
     const count = result.showings.length + (result.aero?.length ?? 0) + (result.losFeliz?.length ?? 0);
-
-    // Sanity: more than 8 total entries is a bad parse
-    if (count > 8) {
-      console.warn(`⚠ ${name}: ${count} entries — too many, falling back to pending`);
-      return { key: result.key, status: "pending", showings: [] };
-    }
-
     const icon = result.status === "open" ? "✓" : result.status === "dark" ? "—" : "?";
     console.log(`${icon} ${name}: ${result.status}, ${count} showings`);
     return result;
