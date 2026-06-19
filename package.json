@@ -9,12 +9,13 @@
     "update": "tsx scrape/index.ts && tsx template/build.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2",
     "cheerio": "^1.0.0"
   },
   "devDependencies": {
-    "tsx": "^4.0.0",
-    "typescript": "^5.0.0",
+    "@types/cheerio": "^0.22.35",
     "@types/node": "^20.0.0",
-    "@types/cheerio": "^0.22.35"
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }

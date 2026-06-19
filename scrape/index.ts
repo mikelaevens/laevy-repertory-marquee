@@ -8,14 +8,16 @@ import { scrapeMetrograph } from "./metrograph.js";
 import type { VenueData } from "./types.js";
 
 const date = new Date();
-// Force to today in the local timezone; for GitHub Actions (UTC) this is fine.
-const dateStr = date.toISOString().slice(0, 10);
+// Use local calendar date, not UTC — avoids off-by-one after midnight UTC
+const dateStr = [
+  date.getFullYear(),
+  String(date.getMonth() + 1).padStart(2, "0"),
+  String(date.getDate()).padStart(2, "0"),
+].join("-");
 
 const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const dow = dayNames[date.getDay()];
-const mon = monthNames[date.getMonth()];
-const dateLabel = `${dow} · ${mon} ${date.getDate()}, ${date.getFullYear()}`;
+const dateLabel = `${dayNames[date.getDay()]} · ${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 
 async function safeScrape(
   name: string,
@@ -23,7 +25,16 @@ async function safeScrape(
 ): Promise<VenueData> {
   try {
     const result = await fn(date);
-    console.log(`✓ ${name}: ${result.status}, ${result.showings.length + (result.aero?.length ?? 0) + (result.losFeliz?.length ?? 0)} showings`);
+    const count = result.showings.length + (result.aero?.length ?? 0) + (result.losFeliz?.length ?? 0);
+
+    // Sanity: more than 8 total entries is a bad parse
+    if (count > 8) {
+      console.warn(`⚠ ${name}: ${count} entries — too many, falling back to pending`);
+      return { key: result.key, status: "pending", showings: [] };
+    }
+
+    const icon = result.status === "open" ? "✓" : result.status === "dark" ? "—" : "?";
+    console.log(`${icon} ${name}: ${result.status}, ${count} showings`);
     return result;
   } catch (err) {
     console.error(`✗ ${name} failed: ${err}`);
@@ -40,6 +51,14 @@ const [newBeverly, vista, cinematheque, musicBox, filmForum, metrograph] =
     safeScrape("film_forum", scrapeFilmForum),
     safeScrape("metrograph", scrapeMetrograph),
   ]);
+
+// Sanity check: if every venue is pending, something is very wrong — fail the build
+const allPending = [newBeverly, vista, cinematheque, musicBox, filmForum, metrograph]
+  .every(v => v.status === "pending");
+if (allPending) {
+  console.error("✗ ALL venues returned pending — scrape step failed entirely");
+  process.exit(1);
+}
 
 const output = {
   date: dateStr,

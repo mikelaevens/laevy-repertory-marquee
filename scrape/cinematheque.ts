@@ -1,66 +1,64 @@
+// American Cinematheque — revivalhouses.com
+// Each film: <li class="Movie Media js-m">
+//   <div class="Media__body">
+//     <p class="Movie__title"><a><cite>Title</cite></a></p>
+//     <p class="Movie__time Movie__time--date">Thu, Jun 18</p>
+//     <p class="Movie__time"><time>7:00 pm</time></p>
+//     <p class="Movie__note"><em>Series note (may include 70mm)</em></p>
+//   </div>
+// </li>
 import * as cheerio from "cheerio";
+import { fetchPage, cleanTime, validateShowings } from "./extract.js";
 import type { VenueData, Showing } from "./types.js";
 
-// RevivalHouses.com mirrors AC's plain-HTML calendar.
-// Rows contain: title, date string "Wed, Jun 17", time, and an italic series note.
-async function scrapeRevivalHouses(url: string, date: Date): Promise<Showing[]> {
-  const res = await fetch(url);
-  const html = await res.text();
+async function scrapeRevival(url: string, date: Date): Promise<Showing[]> {
+  const html = await fetchPage(url);
   const $ = cheerio.load(html);
 
-  const month = date.toLocaleString("en-US", { month: "short" }); // "Jun"
-  const day = date.getDate();
-  const dayOfWeek = date.toLocaleString("en-US", { weekday: "short" }); // "Wed"
-  // Match "Wed, Jun 17" or "Wed Jun 17"
-  const datePattern = new RegExp(`${dayOfWeek}[,\\s]+${month}\\s+${day}\\b`, "i");
+  const weekday = date.toLocaleString("en-US", { weekday: "short" }); // "Thu"
+  const month   = date.toLocaleString("en-US", { month: "short" });   // "Jun"
+  const day     = date.getDate();
+  const datePattern = new RegExp(`${weekday},?\\s+${month}\\s+${day}\\b`, "i");
 
   const showings: Showing[] = [];
 
-  // Each screening is typically a row/article with date + title + time
-  $("[class*='event'], [class*='film'], article, li, tr, .screening").each((_, el) => {
-    const text = $(el).text();
-    if (!datePattern.test(text)) return;
+  // Walk each film item: find ones whose date cell matches today
+  $("li.Movie, [class*='Movie'][class*='Media']").each((_, el) => {
+    const $el = $(el);
+    const dateText = $el.find(".Movie__time--date").first().text().trim();
+    if (!datePattern.test(dateText)) return;
 
-    // Extract title
-    const titleEl = $(el).find("[class*='title'], h2, h3, h4, strong, a").first();
-    let title = titleEl.text().trim();
-    if (!title) {
-      // Try first meaningful text segment
-      const textLines = text.split("\n").map(l => l.trim()).filter(Boolean);
-      title = textLines[0] || "";
-    }
+    const title = $el.find("cite").first().text().trim();
 
-    // Extract time
-    const timeMatch = text.match(/\b(\d{1,2}:\d{2})\s*(?:am|pm)?/i);
-    const time = timeMatch ? timeMatch[1] : "";
+    // Time: the .Movie__time that does NOT have --date class
+    const timeRaw = $el.find(".Movie__time").not(".Movie__time--date").find("time").text().trim()
+                 || $el.find(".Movie__time").not(".Movie__time--date").text().trim();
+    const time = cleanTime(timeRaw);
 
-    // Series/format tag (italic or smaller text)
-    const tagEl = $(el).find("em, i, small, [class*='series'], [class*='note']").first();
-    const tagText = tagEl.text().trim();
-    const tag = /70mm/i.test(tagText) ? "70mm" : /35mm/i.test(tagText) ? "35mm" : "";
+    const noteText = $el.find(".Movie__note").text();
+    const tag = /70mm/i.test(noteText) ? "70mm" : /35mm/i.test(noteText) ? "35mm" : "";
 
-    if (title && time) {
-      showings.push({ title, times: [time], tag });
-    }
+    if (title && time) showings.push({ title, times: [time], tag });
   });
 
   return showings;
 }
 
 export async function scrapeCinematheque(date: Date): Promise<VenueData> {
-  const [aero, losFeliz] = await Promise.all([
-    scrapeRevivalHouses("https://www.revivalhouses.com/theaters/aero-theatre/", date),
-    scrapeRevivalHouses("https://www.revivalhouses.com/theaters/los-feliz-theatre/", date),
+  const [aeroRaw, losFelizRaw] = await Promise.all([
+    scrapeRevival("https://www.revivalhouses.com/theaters/aero-theatre/", date),
+    scrapeRevival("https://www.revivalhouses.com/theaters/los-feliz-theatre/", date),
   ]);
 
-  const overallStatus =
-    aero.length > 0 || losFeliz.length > 0 ? "open" : "pending";
+  const aero     = validateShowings(aeroRaw, "Aero") ?? [];
+  const losFeliz = validateShowings(losFelizRaw, "Los Feliz 3") ?? [];
+  const hasAny   = aero.length > 0 || losFeliz.length > 0;
 
   return {
     key: "cinematheque",
-    status: overallStatus,
+    status: hasAny ? "open" : "pending",
     showings: [],
-    aero: aero.length > 0 ? aero : undefined,
+    aero:     aero.length > 0     ? aero     : undefined,
     losFeliz: losFeliz.length > 0 ? losFeliz : undefined,
   };
 }
