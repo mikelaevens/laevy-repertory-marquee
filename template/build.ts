@@ -169,39 +169,80 @@ const html = `<!DOCTYPE html>
   @keyframes bulbChase{0%,100%{opacity:.38;}50%{opacity:1;}}
   @keyframes neonFlicker{0%,17%,21%,24%,55%,59%,100%{opacity:1;}19%,23%,57%{opacity:.5;}}
   @keyframes neonBox{0%,100%{filter:brightness(1);}50%{filter:brightness(1.12);}}
+
+  /* ── Responsive overrides ── */
+  .stage{width:1520px;margin:0 auto;}
+  .marquee-wrap{position:relative;width:1460px;margin:0 auto;}
+  .marquee-blade{position:relative;background:linear-gradient(180deg,#84191a 0%,#5d0f10 100%);border-radius:18px;border:3px solid #c9a24c;padding:40px 70px 38px;box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 90px rgba(255,150,60,.16),inset 0 2px 4px rgba(255,255,255,.12);}
+  .marquee-title{font-family:'Cinzel',serif;font-weight:900;font-size:66px;letter-spacing:.09em;color:#f5da8c;line-height:1;text-shadow:0 2px 0 #6b4a12,0 0 32px rgba(255,200,90,.5);}
+  .marquee-sub{font-family:'Cinzel',serif;font-weight:700;font-size:29px;letter-spacing:.36em;color:#f1e8d1;margin-top:10px;padding-left:.36em;}
+  .marquee-date{text-align:center;font-family:'Oswald',sans-serif;font-weight:600;font-size:16px;letter-spacing:.24em;color:#5a3d18;text-transform:uppercase;padding-left:.24em;}
+  .panels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .facade-base{margin-top:46px;display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:end;gap:24px;padding-bottom:48px;}
+  .facade-plaque{align-self:end;}
+  .facade-neon{justify-self:end;align-self:end;}
+  .hanger-arms{position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:flex;gap:520px;}
+  .bulbs-top{position:absolute;top:11px;left:26px;right:26px;display:flex;justify-content:space-between;}
+  .bulbs-bottom{position:absolute;bottom:11px;left:26px;right:26px;display:flex;justify-content:space-between;}
+
+  @media(max-width:900px){
+    .stage{width:100%;}
+    .marquee-wrap{width:100%;}
+    .panels-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
+    .marquee-blade{padding:28px 40px 26px;}
+    .marquee-title{font-size:44px;}
+    .marquee-sub{font-size:18px;letter-spacing:.22em;}
+    .marquee-date{font-size:13px;letter-spacing:.14em;}
+    .hanger-arms{gap:300px;}
+  }
+
+  @media(max-width:560px){
+    .stage{width:100%;}
+    .marquee-wrap{width:100%;}
+    .panels-grid{grid-template-columns:1fr;gap:12px;}
+    .marquee-blade{padding:22px 22px 20px;border-radius:12px;}
+    .marquee-title{font-size:30px;letter-spacing:.06em;}
+    .marquee-sub{font-size:13px;letter-spacing:.18em;margin-top:6px;}
+    .marquee-date{font-size:10px;letter-spacing:.1em;}
+    .bulbs-top,.bulbs-bottom{display:none;}
+    .hanger-arms{display:none;}
+    .facade-base{grid-template-columns:1fr;gap:16px;padding-bottom:32px;}
+    .facade-plaque{display:none;}
+    .facade-neon{justify-self:center;}
+  }
 </style>
 </head>
 <body>
-<div style="min-height:100vh;box-sizing:border-box;background:radial-gradient(120% 80% at 50% 0%,#2a201a 0%,#140f0c 45%,#0a0807 100%);padding:56px 40px 64px;font-family:'Oswald',sans-serif;overflow-x:auto;">
-<div style="width:1520px;margin:0 auto;">
+<div style="min-height:100vh;box-sizing:border-box;background:radial-gradient(120% 80% at 50% 0%,#2a201a 0%,#140f0c 45%,#0a0807 100%);padding:56px 20px 64px;font-family:'Oswald',sans-serif;">
+<div class="stage">
 
   <!-- MARQUEE SIGN -->
-  <div style="position:relative;width:1460px;margin:0 auto;">
-    <div style="position:relative;background:linear-gradient(180deg,#84191a 0%,#5d0f10 100%);border-radius:18px;border:3px solid #c9a24c;padding:40px 70px 38px;box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 90px rgba(255,150,60,.16),inset 0 2px 4px rgba(255,255,255,.12);">
+  <div class="marquee-wrap">
+    <div class="marquee-blade">
       <!-- top bulbs -->
-      <div style="position:absolute;top:11px;left:26px;right:26px;display:flex;justify-content:space-between;">${bulbs()}</div>
+      <div class="bulbs-top">${bulbs()}</div>
       <!-- bottom bulbs -->
-      <div style="position:absolute;bottom:11px;left:26px;right:26px;display:flex;justify-content:space-between;">${bulbs()}</div>
+      <div class="bulbs-bottom">${bulbs()}</div>
       <div style="text-align:center;padding:4px 0;">
-        <div style="font-family:'Cinzel',serif;font-weight:900;font-size:66px;letter-spacing:.09em;color:#f5da8c;line-height:1;text-shadow:0 2px 0 #6b4a12,0 0 32px rgba(255,200,90,.5);">LAEVY</div>
-        <div style="font-family:'Cinzel',serif;font-weight:700;font-size:29px;letter-spacing:.36em;color:#f1e8d1;margin-top:10px;padding-left:.36em;">REPERTORY THEATRE</div>
+        <div class="marquee-title">LAEVY</div>
+        <div class="marquee-sub">REPERTORY THEATRE</div>
       </div>
       <div style="margin-top:20px;background:linear-gradient(180deg,#f4e8c8,#dbca9f);border-radius:6px;padding:10px 0;box-shadow:inset 0 0 18px rgba(120,90,40,.35);">
-        <div style="text-align:center;font-family:'Oswald',sans-serif;font-weight:600;font-size:16px;letter-spacing:.24em;color:#5a3d18;text-transform:uppercase;padding-left:.24em;">${esc(dateLabel)} · Six Revival Houses, One Marquee</div>
+        <div class="marquee-date">${esc(dateLabel)} · Six Revival Houses, One Marquee</div>
       </div>
     </div>
     <!-- hanger arms -->
-    <div style="position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:flex;gap:520px;">
+    <div class="hanger-arms">
       <span style="width:5px;height:24px;background:linear-gradient(#caa24c,#7a5c1f);"></span>
       <span style="width:5px;height:24px;background:linear-gradient(#caa24c,#7a5c1f);"></span>
     </div>
   </div>
 
   <!-- BUILDING FACADE -->
-  <div style="margin-top:30px;background-color:#241b15;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.30) 0 2px,transparent 2px 38px),repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 2px,transparent 2px 88px),radial-gradient(120% 60% at 50% -10%,rgba(255,170,80,.10),transparent 60%);border-radius:4px;border-left:6px solid rgba(0,0,0,.35);border-right:6px solid rgba(0,0,0,.35);box-shadow:inset 0 36px 70px rgba(0,0,0,.55),0 30px 60px rgba(0,0,0,.5);padding:46px 46px 0;">
+  <div style="margin-top:30px;background-color:#241b15;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.30) 0 2px,transparent 2px 38px),repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 2px,transparent 2px 88px),radial-gradient(120% 60% at 50% -10%,rgba(255,170,80,.10),transparent 60%);border-radius:4px;border-left:6px solid rgba(0,0,0,.35);border-right:6px solid rgba(0,0,0,.35);box-shadow:inset 0 36px 70px rgba(0,0,0,.55),0 30px 60px rgba(0,0,0,.5);padding:46px 20px 0;">
 
     <!-- 6 DISPLAY CASES -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;">
+    <div class="panels-grid">
       ${panelNewBeverly(venues.newBeverly)}
       ${panelVista(venues.vista)}
       ${panelCinematheque(venues.cinematheque)}
@@ -211,9 +252,9 @@ const html = `<!DOCTYPE html>
     </div>
 
     <!-- FACADE BASE -->
-    <div style="margin-top:46px;display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:end;gap:24px;padding-bottom:48px;">
+    <div class="facade-base">
       <!-- brass plaque -->
-      <div style="align-self:end;">
+      <div class="facade-plaque">
         <div style="display:inline-block;background:linear-gradient(150deg,#e6c473,#8a6829);padding:10px 18px;border-radius:4px;box-shadow:0 6px 16px rgba(0,0,0,.5),inset 0 1px 2px rgba(255,255,255,.4);">
           <div style="font-family:'Cinzel',serif;font-weight:700;font-size:12px;letter-spacing:.24em;color:#3a2810;padding-left:.24em;">EST. MCMXXI</div>
         </div>
@@ -228,7 +269,7 @@ const html = `<!DOCTYPE html>
         </div>
       </div>
       <!-- NOW SHOWING neon -->
-      <div style="justify-self:end;align-self:end;">
+      <div class="facade-neon">
         <div style="background:linear-gradient(180deg,#171210,#0c0a09);border:2px solid #3a2c1e;border-radius:10px;padding:18px 28px;box-shadow:0 12px 32px rgba(0,0,0,.6);transform:rotate(-2.5deg);">
           <div style="font-family:'Limelight',sans-serif;font-size:30px;letter-spacing:.05em;color:#fff0d2;text-shadow:0 0 6px #ff7a4d,0 0 14px #ff5630,0 0 28px #ff3a18;animation:neonFlicker 5s infinite;">NOW SHOWING</div>
           <div style="text-align:center;margin-top:9px;font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.3em;font-size:11px;color:#e6b455;padding-left:.3em;">↓ TICKETS HERE ↓</div>
